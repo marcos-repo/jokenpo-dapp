@@ -12,44 +12,44 @@ contract JoKenPoAdapter  {
         owner = msg.sender;
     }
 
-    function getAddress() external view upgraded onlyOwner returns(address)  {
+    function getImplementationAddress() external view initialized onlyOwner returns(address)  {
         return address(joKenPo);
     }
 
-    function getBalance() external view returns(uint) {
+    function getBalance() external view initialized returns(uint) {
         return joKenPo.getBalance();
     }
 
-    function getResult() external view upgraded returns(string memory) {
+    function getResult() external view initialized returns(string memory) {
         return joKenPo.getResult();
     }
 
-    function upgrade(address newImplementation) external onlyOwner {
+    function init(address newImplementation) external onlyOwner {
         require(newImplementation != address(0), "Endereco vazio nao permitido");
 
         joKenPo = IJoKenPo(newImplementation);
     }
 
-    function getBid() external view returns(uint256) {
+    function getBid() external view initialized returns(uint256) {
         return joKenPo.getBid();
     }
 
-    function getComission() external view returns(uint8) {
+    function getComission() external view initialized returns(uint8) {
         return joKenPo.getComission();
     }
 
-    function getLeaderboard() external view returns(JoKenPoLibrary.Player[] memory arr) {
+    function getLeaderboard() external view initialized returns(JoKenPoLibrary.Player[] memory arr) {
         return joKenPo.getLeaderboard();
     }
 
 
-    function play(JoKenPoLibrary.Options newChoice) external payable {
+    function play(JoKenPoLibrary.Options newChoice) external payable initialized {
         joKenPo.play{value: msg.value}(newChoice);
     }
 
 
-    modifier upgraded() {
-        require(address(joKenPo) != address(0), "Contrato nao atualizado");
+    modifier initialized() {
+        require(address(joKenPo) != address(0), "Contrato nao inicializado");
         _;
     }
 

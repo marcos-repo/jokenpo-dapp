@@ -21,7 +21,7 @@ describe("JoKenPo Tests", function () {
     const JoKenPo = await hre.ethers.getContractFactory("JoKenPo");
     const joKenPo = await JoKenPo.deploy();
 
-    return { joKenPo: joKenPo, owner, player1, player2 };
+    return { joKenPo, owner, player1, player2 };
   }
 
   describe("Deployment", async function () {
