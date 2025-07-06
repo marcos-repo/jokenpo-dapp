@@ -51,7 +51,9 @@ contract JoKenPoAdapter  {
     }
 
     function play(JoKenPoLibrary.Options newChoice) external payable initialized {
-        joKenPo.play{value: msg.value}(newChoice);
+        string memory result = joKenPo.play{value: msg.value}(newChoice);
+
+        emit Played(msg.sender, result);
     }
 
 
@@ -64,4 +66,6 @@ contract JoKenPoAdapter  {
         require(owner == tx.origin, "A carteira nao possui esta permissao");
         _;
     }
+
+    event Played(address indexed player, string result);
 }

@@ -73,7 +73,7 @@ contract JoKenPo is IJoKenPo {
         return address(this).balance;
     }
 
-    function play(JoKenPoLibrary.Options newChoice) external payable {
+    function play(JoKenPoLibrary.Options newChoice) external payable returns (string memory){
         require(tx.origin != owner, "O proprietario do contrato nao pode jogar");
         require(newChoice != JoKenPoLibrary.Options.NONE, "Jogada invalida");
         require(player1 != tx.origin, "Aguarde a jogada do outro jogador");
@@ -107,6 +107,8 @@ contract JoKenPo is IJoKenPo {
             player1 = address(0);
             choice1 = JoKenPoLibrary.Options.NONE;
         }
+
+        return result;
     }
 
     function getLeaderboard() external view returns(JoKenPoLibrary.Player[] memory arr) {

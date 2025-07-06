@@ -119,3 +119,72 @@ export async function setComission(newComission: number) : Promise<string> {
 
     return tx.transactionHash;
 }
+
+export type Players = {
+    wallet: string;
+    wins: number;
+}
+
+export type Leaderboard = {
+    players?: Players[];
+    status?: string;
+}
+
+export enum Options { 
+    NONE = 0,
+    ROCK = 1, 
+    PAPER = 2, 
+    SCISSORS = 3
+}
+
+export async function play(option: Options): Promise<string> {
+    console.log('chegou na play');
+
+    const contract = getContract();
+    const bid : string = await contract.methods.getBid().call();
+    const tx = await contract.methods.play(option).send({value: bid});
+
+    return tx.transactionHash;
+}
+
+export async function getStatus(): Promise<string> {
+    console.log('chegou na getStaus');
+
+    const contract = getContract();
+
+    return await contract.methods.getResult().call();
+}
+
+export async function getLeaderboard(): Promise<Leaderboard> {
+    const contract = getContract();
+
+    const players = await contract.methods.getLeaderboard().call();
+    const status = await contract.methods.getResult().call();
+
+    return {
+        players,
+        status
+    } as Leaderboard;
+}
+
+export async function getBestPlayers(): Promise<Players[]> {
+    const contract = getContract();
+
+    return await contract.methods.getLeaderboard().call();
+}
+
+export function listenEvent(callback: Function) {
+    
+    const web3 = new Web3(`${import.meta.env.VITE_WEBSOCKET_SERVER}`);
+    const contract = getContract(web3);
+    contract.events.Played({
+        fromBlock: "latest"
+    })
+    .on(
+        "data", 
+        (event: any) => {
+            console.log(event);
+            callback(event.returnValues.result);
+        }
+    )
+}
