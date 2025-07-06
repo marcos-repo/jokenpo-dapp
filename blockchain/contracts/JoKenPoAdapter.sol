@@ -37,11 +37,18 @@ contract JoKenPoAdapter  {
     function getComission() external view initialized returns(uint8) {
         return joKenPo.getComission();
     }
-
+    
     function getLeaderboard() external view initialized returns(JoKenPoLibrary.Player[] memory arr) {
         return joKenPo.getLeaderboard();
     }
 
+    function setBid(uint256 newBid) external onlyOwner {
+        return joKenPo.setBid(newBid);
+    }
+
+    function setComission(uint8 newCommission) external onlyOwner {
+        return joKenPo.setComission(newCommission);
+    }
 
     function play(JoKenPoLibrary.Options newChoice) external payable initialized {
         joKenPo.play{value: msg.value}(newChoice);

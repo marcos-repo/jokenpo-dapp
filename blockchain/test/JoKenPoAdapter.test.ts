@@ -58,6 +58,32 @@ describe("JoKenPoAdapter Tests", function () {
         .revertedWith("Contrato nao inicializado");
     });
 
+    it("Should set bid", async function () {
+      const { joKenPo, joKenPoAdapter, owner, player1, player2 } = await loadFixture(deployFixture);
+
+      await joKenPoAdapter.init(joKenPo);
+
+      const newBid = hre.ethers.parseEther("0.02");
+
+      await joKenPoAdapter.setBid(newBid);
+      const bid = await joKenPoAdapter.getBid();
+
+      expect(bid).eq(newBid);
+    });
+
+     it("Should NOT set bid(permission)", async function () {
+      const { joKenPo, owner, player1, player2 } = await loadFixture(deployFixture);
+
+      const newBid = hre.ethers.parseEther("0.02");
+
+      const player1Instance = joKenPo.connect(player1);
+
+      await expect(player1Instance.setBid(newBid))
+            .to
+            .be
+            .revertedWith("A carteira nao possui esta permissao");
+    });
+
     it("Should get comission", async function () {
       const { joKenPo, joKenPoAdapter, owner, player1, player2 } = await loadFixture(deployFixture);
 
@@ -74,6 +100,32 @@ describe("JoKenPoAdapter Tests", function () {
         .to
         .be
         .revertedWith("Contrato nao inicializado");
+    });
+
+    it("Should set comission", async function () {
+      const { joKenPo, joKenPoAdapter, owner, player1, player2 } = await loadFixture(deployFixture);
+
+      await joKenPoAdapter.init(joKenPo);
+
+      const newComission = 20;
+
+      await joKenPoAdapter.setComission(newComission);
+      const comission = await joKenPoAdapter.getComission();
+
+      expect(comission).eq(newComission);
+    });
+
+     it("Should NOT set comission(permission)", async function () {
+      const { joKenPo, owner, player1, player2 } = await loadFixture(deployFixture);
+
+      const newComission = 20;
+
+      const player1Instance = joKenPo.connect(player1);
+
+      await expect(player1Instance.setComission(newComission))
+            .to
+            .be
+            .revertedWith("A carteira nao possui esta permissao");
     });
 
     it("Should get NOT upgrade(permission)", async function () {
