@@ -1,14 +1,31 @@
-import { useState } from "react";
-import { doLogin } from "./Web3Service.ts";
+import { useState, useEffect } from "react";
+import { doLogin, getLoginData } from "./Web3Service.ts";
+
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const loginData = getLoginData();
+    if(loginData) {
+      redirectAfterLogin(loginData.isAdmin);
+    }
+  },[]);
+
+  function redirectAfterLogin(isAdmin : boolean) {
+    if(isAdmin)
+      navigate('/admin');
+    else
+      navigate('/app');
+  }
 
   function onBtnClick() {
     setMessage("Efetuando Login...");
     doLogin()
         .then(result => {
-          setMessage(`Conectado como ${result.account}`)
+          redirectAfterLogin(result.isAdmin);
         })
         .catch(error => setMessage(error.message));
   }
