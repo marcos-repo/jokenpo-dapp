@@ -1,4 +1,4 @@
-import Web3 from "web3";
+import Web3, { Contract } from "web3";
 import JoKenPoABI from '../src/contracts/abi/JoKenPo.abi.json'
 
 export type LoginResult = {
@@ -72,4 +72,50 @@ export type Dashboard = {
     bid?: string;
     comission?: number;
     address?: string;
+}
+
+export async function getDashboard() : Promise<Dashboard> {
+    
+    const contract = getContract();
+    const address : string = await contract.methods.getImplementationAddress().call();
+
+    if(/^(0x0+)$/.test(address))
+        return { 
+            bid: Web3.utils.toWei('0.01', 'wei'),
+            comission: 10,
+            address: address 
+        } as Dashboard;
+
+    
+    return { 
+        bid: await contract.methods.getBid().call(),
+        comission: await contract.methods.getComission().call(),
+        address: address 
+    } as Dashboard;
+}
+
+export async function upgradeContract(newContract: string) : Promise<string> {
+    const contract = getContract();
+    const tx = await contract.methods.init(newContract).send();
+
+    return tx.transactionHash;
+}
+
+export async function setBid(newBid: string) : Promise<string> {
+    const contract = getContract();
+    
+    
+    
+    const tx = await contract.methods.setBid(newBid).send();
+
+    console.log('chegou #2');
+
+    return tx.transactionHash;
+}
+
+export async function setComission(newComission: number) : Promise<string> {
+    const contract = getContract();
+    const tx = await contract.methods.setComission(newComission).send();
+
+    return tx.transactionHash;
 }

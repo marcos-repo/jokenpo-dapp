@@ -1,10 +1,20 @@
-import { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Header from "./Header"
-import type { Dashboard } from "./Web3Service";
+import { getDashboard, type Dashboard, upgradeContract, setBid, setComission } from "./Web3Service";
 
 function Admin() {
   const [message, setMessage] = useState("");
   const [dashboard, setDashboard] = useState<Dashboard>();
+
+  useEffect(() => {
+    getDashboard()
+      .then(dashboard => {
+        setDashboard(dashboard);
+      })
+      .catch(error => {
+        setMessage(error.message);
+      });
+  }, []);
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setDashboard(prevState => ({
@@ -14,15 +24,30 @@ function Admin() {
   }
 
   function onChangeBidClick() {
-    
+    if(!dashboard?.bid)
+      return setMessage('O endereço do novo contrato é obrigatório');
+
+     setBid(dashboard.bid)
+      .then(tx => setMessage(`Valor da aposta atualizado com sucesso! Tx: ${tx}`))
+      .catch(error => setMessage(error.message));
   }
 
   function onChangeComissionClick() {
-    
+    if(!dashboard?.comission)
+      return setMessage('O novo percentual da commisão é obrigatório');
+
+    setComission(dashboard.comission)
+      .then(tx => setMessage(`Percentual da comissão atualizado com sucesso! Tx: ${tx}`))
+      .catch(error => setMessage(error.message));
   }
 
   function onUpgradeClick() {
-    
+    if(!dashboard?.address)
+      return setMessage('O endereço do novo contrato é obrigatório');
+
+    upgradeContract(dashboard.address)
+      .then(tx => setMessage(`Contrato atualizado com sucesso! Tx: ${tx}`))
+      .catch(error => setMessage(error.message));
   }  
 
   return (
@@ -60,7 +85,7 @@ function Admin() {
               <div className="col-sm-12">
                 <label htmlFor="address" className="form-label">Endereço do novo contrato:</label>
                 <div className="input-group">
-                    <input type="number" className="form-control" id="address" value={dashboard?.address || ''} onChange={onInputChange} />
+                    <input type="text" className="form-control" id="address" value={dashboard?.address || ''} onChange={onInputChange} />
                     <button type="button" className="btn btn-primary d-inline-flex align-items-center" onClick={onUpgradeClick}>Atualizar Contrato</button>
                 </div>
               </div>
